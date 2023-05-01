@@ -1,14 +1,4 @@
 const mongoose = require('mongoose')
-require('dotenv').config()
-
-const mongoUrl = process.env.MONGODB_URI
-mongoose.connect(mongoUrl)
-  .then(() => {
-    console.log('Connect to MongoDB')
-  })
-  .catch(error => {
-    console.log('Error connecting to MongoDB: ', error.message)
-  })
 
 const blogSchema = mongoose.Schema({
   title: String,
