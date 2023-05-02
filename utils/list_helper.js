@@ -16,7 +16,28 @@ const totalLikes = (blogs) => {
   return sum
 }
 
+const favoriteBlog = (blogs) => {
+  let max = 0
+  let maxBlog = {
+    title: String,
+    author: String,
+    likes: Number
+  }
+
+  blogs.map(b => {
+    if (b.likes > max) {
+      max = b.likes
+      maxBlog.title = b.title
+      maxBlog.author = b.author
+      maxBlog.likes = b.likes
+    }
+    return maxBlog
+  })
+  return maxBlog
+}
+
 module.exports = {
   dummy,
-  totalLikes
+  totalLikes,
+  favoriteBlog
 }
