@@ -55,6 +55,23 @@ test('try added new bad blog', async () => {
   expect(blogs).toHaveLength(testHelper.initialBlogs.length)
 })
 
+test('check new blog likes is 0 or bigger. If likes is null added likes 0', async () => {
+  const newBlog = {
+    'title': 'PostMan Jest test',
+    'author': 'Jest',
+    'url': 'http://localhost:3003/api/blogs',
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const blogs = await testHelper.blogsInDataBase()
+  expect(blogs).toHaveLength(testHelper.initialBlogs.length + 1)
+})
+
 afterAll(async () => {
   await mongoose.connection.close()
 })
