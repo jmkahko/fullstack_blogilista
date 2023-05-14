@@ -21,6 +21,40 @@ test('check blogs id if not _id', async () => {
   responseList.map(res => expect(res.id).toBeDefined())
 })
 
+test('added new blog', async () => {
+  const newBlog = {
+    'title': 'PostMan Jest test',
+    'author': 'Jest',
+    'url': 'http://localhost:3003/api/blogs',
+    'likes': 5
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const blogs = await testHelper.blogsInDataBase()
+  expect(blogs).toHaveLength(testHelper.initialBlogs.length + 1)
+})
+
+test('try added new bad blog', async () => {
+  const newBadBlog = {
+    'title': 'PostMan Jest bad blog',
+    'url': 'http://localhost:3003/api/blogs',
+    'likes': '5'
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBadBlog)
+    .expect(500)
+
+  const blogs = await testHelper.blogsInDataBase()
+  expect(blogs).toHaveLength(testHelper.initialBlogs.length)
+})
+
 afterAll(async () => {
   await mongoose.connection.close()
 })
