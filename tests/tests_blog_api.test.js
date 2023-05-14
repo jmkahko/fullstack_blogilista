@@ -15,6 +15,15 @@ test('get all blogs', async () => {
   expect(response.body).toHaveLength(testHelper.initialBlogs.length)
 })
 
+test('check blogs id if not _id', async () => {
+  const response = await api.get('/api/blogs')
+  const responseList = response.body
+
+  for (let x = 0; x < responseList.length; x++) {
+    expect(responseList[x].id).toBeDefined()
+  }
+})
+
 afterAll(async () => {
   await mongoose.connection.close()
 })
