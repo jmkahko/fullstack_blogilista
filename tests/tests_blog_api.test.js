@@ -18,10 +18,7 @@ test('get all blogs', async () => {
 test('check blogs id if not _id', async () => {
   const response = await api.get('/api/blogs')
   const responseList = response.body
-
-  for (let x = 0; x < responseList.length; x++) {
-    expect(responseList[x].id).toBeDefined()
-  }
+  responseList.map(res => expect(res.id).toBeDefined())
 })
 
 afterAll(async () => {
