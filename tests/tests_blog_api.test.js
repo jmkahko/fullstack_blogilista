@@ -104,6 +104,18 @@ test('try added new bad blog, no url', async () => {
   expect(blogs).toHaveLength(testHelper.initialBlogs.length)
 })
 
+test('try delete blog', async () => {
+  const allBlogsFirst = await testHelper.blogsInDataBase()
+  const deleteFirstBlog = allBlogsFirst[0]
+
+  await api
+    .delete(`/api/blogs/${deleteFirstBlog.id}`)
+    .expect(204)
+
+  const allBlogsLast = await testHelper.blogsInDataBase()
+  expect(allBlogsLast).toHaveLength(allBlogsFirst.length - 1)
+})
+
 afterAll(async () => {
   await mongoose.connection.close()
 })
