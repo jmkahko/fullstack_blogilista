@@ -116,6 +116,25 @@ test('try delete blog', async () => {
   expect(allBlogsLast).toHaveLength(allBlogsFirst.length - 1)
 })
 
+test('update blog', async () => {
+  const allBlogsFirst = await testHelper.blogsInDataBase()
+
+  const updateBlog = {
+    title: allBlogsFirst[0].title,
+    author: allBlogsFirst[0].author,
+    url: allBlogsFirst[0].url,
+    likes: 9
+  }
+
+  await api
+    .put(`/api/blogs/${allBlogsFirst[0].id}`)
+    .send(updateBlog)
+    .expect(201)
+
+  const allBlogsLast = await testHelper.blogsInDataBase()
+  expect(allBlogsLast[0].likes).toBe(9)
+})
+
 afterAll(async () => {
   await mongoose.connection.close()
 })
