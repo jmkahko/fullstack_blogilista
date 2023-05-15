@@ -32,3 +32,41 @@ test('Created user', async () => {
   const usersLast = await testHelper.usersInDatabase()
   expect(usersLast).toHaveLength(usersFirst.length +1)
 })
+
+test('Not created user if username or password too short', async () => {
+  const usersFirst = await testHelper.usersInDatabase()
+
+  const newUser = {
+    username: 'ja',
+    name: 'Janne Kähkönen',
+    password: 'bi'
+  }
+
+  await api
+    .post('/api/users')
+    .send(newUser)
+    .expect(401)
+    .expect('Content-Type', /application\/json/)
+
+  const usersLast = await testHelper.usersInDatabase()
+  expect(usersLast).toHaveLength(usersFirst.length)
+})
+
+test('Minimun length username and password test', async () => {
+  const usersFirst = await testHelper.usersInDatabase()
+
+  const newUser = {
+    username: 'jan',
+    name: 'Janne Kähkönen',
+    password: 'big'
+  }
+
+  await api
+    .post('/api/users')
+    .send(newUser)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const usersLast = await testHelper.usersInDatabase()
+  expect(usersLast).toHaveLength(usersFirst.length +1)
+})
