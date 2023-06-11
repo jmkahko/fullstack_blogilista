@@ -2,6 +2,7 @@ const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
 const User = require('../models/user')
 const jwt = require('jsonwebtoken')
+const logger = require('../utils/logger')
 
 blogsRouter.get('/', async (request, response) => {
   const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 })
@@ -38,8 +39,42 @@ blogsRouter.post('/', async (request, response) => {
 })
 
 blogsRouter.delete('/:id', async (request, response) => {
-  await Blog.findByIdAndDelete(request.params.id)
-  response.status(204).end()
+  const token = request.token
+  if (token === undefined) {
+    return response.status(401).json({ error: 'token needed' })
+  }
+
+  try {
+    const decodedToken = jwt.verify(request.token, process.env.SECRET)
+    if (!decodedToken.id) {
+      return response.status(401).json({ error: 'token invalid' })
+    }
+
+    const user = await User.findById(decodedToken.id)
+    if (user === null) {
+      return response.status(401).json({ error: 'user not found' })
+    }
+
+    const blog = await Blog.findById(request.params.id)
+    if (blog === null) {
+      return response.status(401).json({ error: 'blog not found' })
+    }
+
+    if (blog.user.toString() === user.id.toString()) {
+      await Blog.findByIdAndDelete(request.params.id)
+
+      const blogList = user.blogs.filter(u => u.toString() !== request.params.id)
+      user.blogs = blogList
+      await user.save()
+
+      response.status(204).end()
+    } else {
+      response.status(401).json({ error: 'wrong user' })
+    }
+  } catch (e) {
+    logger.error('error ', e)
+    response.status(500).json({ error: 'error contact support' })
+  }
 })
 
 blogsRouter.put('/:id', async (request, response) => {
